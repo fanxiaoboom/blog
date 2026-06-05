@@ -52,20 +52,26 @@ async function beforeAuthMiddleware(req: NextRequest) {
   return NextResponse.next()
 }
 
-export default authMiddleware({
-  beforeAuth: beforeAuthMiddleware,
-  publicRoutes: [
-    '/',
-    '/studio(.*)',
-    '/api(.*)',
-    '/blog(.*)',
-    '/confirm(.*)',
-    '/projects',
-    '/guestbook',
-    '/newsletters(.*)',
-    '/about',
-    '/rss',
-    '/feed',
-    '/ama',
-  ],
-})
+const hasClerkSecret = Boolean(
+  process.env.CLERK_SECRET_KEY || process.env.CLERK_API_KEY
+)
+
+export default hasClerkSecret
+  ? authMiddleware({
+      beforeAuth: beforeAuthMiddleware,
+      publicRoutes: [
+        '/',
+        '/studio(.*)',
+        '/api(.*)',
+        '/blog(.*)',
+        '/confirm(.*)',
+        '/projects',
+        '/guestbook',
+        '/newsletters(.*)',
+        '/about',
+        '/rss',
+        '/feed',
+        '/ama',
+      ],
+    })
+  : beforeAuthMiddleware

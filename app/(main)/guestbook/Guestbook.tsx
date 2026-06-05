@@ -8,12 +8,25 @@ import { UserArrowLeftIcon } from '~/assets'
 import { Button } from '~/components/ui/Button'
 import { type GuestbookDto } from '~/db/dto/guestbook.dto'
 import { url } from '~/lib'
+import { isClerkEnabled } from '~/lib/clerk'
 
 import { GuestbookFeeds } from './GuestbookFeeds'
 import { GuestbookInput } from './GuestbookInput'
 
 export function Guestbook(props: { messages?: GuestbookDto[] }) {
   const pathname = usePathname()
+
+  if (!isClerkEnabled) {
+    return (
+      <section className="max-w-2xl">
+        <Button type="button" disabled>
+          <UserArrowLeftIcon className="mr-1 h-5 w-5" />
+          本地预览未配置登录，暂时不能留言
+        </Button>
+        <GuestbookFeeds messages={props.messages} />
+      </section>
+    )
+  }
 
   return (
     <section className="max-w-2xl">

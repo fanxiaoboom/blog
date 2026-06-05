@@ -1,5 +1,4 @@
 import { clerkClient, currentUser } from '@clerk/nextjs'
-import { Ratelimit } from '@upstash/ratelimit'
 import { asc, eq } from 'drizzle-orm'
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
@@ -16,14 +15,9 @@ import NewReplyCommentEmail from '~/emails/NewReplyComment'
 import { env } from '~/env.mjs'
 import { url } from '~/lib'
 import { resend } from '~/lib/mail'
-import { redis } from '~/lib/redis'
+import { checkRateLimit } from '~/lib/redis'
+import { isDatabaseEnabled } from '~/lib/services'
 import { client } from '~/sanity/lib/client'
-
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(10, '10 s'),
-  analytics: true,
-})
 
 function getKey(id: string) {
   return `comments:${id}`
@@ -34,13 +28,14 @@ export async function GET(req: NextRequest, { params }: Params) {
   try {
     const postId = params.id
 
-    const { success } = await ratelimit.limit(
-      getKey(postId) + `_${req.ip ?? ''}`
-    )
-    if (!success) {
+    if (!(await checkRateLimit(getKey(postId) + `_${req.ip ?? ''}`))) {
       return new Response('Too Many Requests', {
         status: 429,
       })
+    }
+
+    if (!isDatabaseEnabled) {
+      return NextResponse.json([])
     }
 
     const data = await db
@@ -80,6 +75,13 @@ const CreateCommentSchema = z.object({
 })
 
 export async function POST(req: NextRequest, { params }: Params) {
+  if (!isDatabaseEnabled) {
+    return NextResponse.json(
+      { error: 'Comments are not configured for local preview.' },
+      { status: 503 }
+    )
+  }
+
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
@@ -87,8 +89,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
   const postId = params.id
 
-  const { success } = await ratelimit.limit(getKey(postId) + `_${req.ip ?? ''}`)
-  if (!success) {
+  if (!(await checkRateLimit(getKey(postId) + `_${req.ip ?? ''}`))) {
     return new Response('Too Many Requests', {
       status: 429,
     })
@@ -136,7 +137,7 @@ export async function POST(req: NextRequest, { params }: Params) {
         const primaryEmailAddress = emailAddresses.find(
           (emailAddress) => emailAddress.id === primaryEmailAddressId
         )
-        if (primaryEmailAddress) {
+        if (primaryEmailAddress && resend) {
           await resend.emails.send({
             from: emailConfig.from,
             to: primaryEmailAddress.emailAddress,

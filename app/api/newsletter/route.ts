@@ -1,31 +1,25 @@
-import { Ratelimit } from '@upstash/ratelimit'
 import { eq } from 'drizzle-orm'
 import { type NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { emailConfig } from '~/config/email'
+import { siteConfig } from '~/config/site.mjs'
 import { db } from '~/db'
 import { subscribers } from '~/db/schema'
 import ConfirmSubscriptionEmail from '~/emails/ConfirmSubscription'
 import { env } from '~/env.mjs'
 import { url } from '~/lib'
 import { resend } from '~/lib/mail'
-import { redis } from '~/lib/redis'
+import { checkRateLimit } from '~/lib/redis'
+import { isDatabaseEnabled } from '~/lib/services'
 
 const newsletterFormSchema = z.object({
   email: z.string().email().min(1),
 })
 
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(1, '10 s'),
-  analytics: true,
-})
-
 export async function POST(req: NextRequest) {
   if (env.NODE_ENV === 'production') {
-    const { success } = await ratelimit.limit('subscribe_' + (req.ip ?? ''))
-    if (!success) {
+    if (!(await checkRateLimit('subscribe_' + (req.ip ?? '')))) {
       return NextResponse.error()
     }
   }
@@ -33,6 +27,10 @@ export async function POST(req: NextRequest) {
   try {
     const { data } = await req.json()
     const parsed = newsletterFormSchema.parse(data)
+
+    if (!isDatabaseEnabled) {
+      return NextResponse.json({ status: 'success' })
+    }
 
     const [subscriber] = await db
       .select()
@@ -46,11 +44,11 @@ export async function POST(req: NextRequest) {
     // generate a random one-time token
     const token = crypto.randomUUID()
 
-    if (env.NODE_ENV === 'production') {
+    if (env.NODE_ENV === 'production' && resend) {
       await resend.emails.send({
         from: emailConfig.from,
         to: parsed.email,
-        subject: '来自 Cali 的订阅确认',
+        subject: `来自 ${siteConfig.name} 的订阅确认`,
         react: ConfirmSubscriptionEmail({
           link: url(`confirm/${token}`).href,
         }),

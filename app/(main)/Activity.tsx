@@ -6,6 +6,7 @@ import React from 'react'
 import { useQuery } from 'react-query'
 
 import { Tooltip } from '~/components/ui/Tooltip'
+import { siteConfig } from '~/config/site.mjs'
 
 const appLabels: { [app: string]: string } = {
   slack: 'Slack',
@@ -29,6 +30,8 @@ const appLabels: { [app: string]: string } = {
   screenflow: 'ScreenFlow',
   resolve: 'DaVinci Resolve',
 }
+const siteHostname = new URL(siteConfig.url).hostname
+
 export function Activity() {
   const { data } = useQuery<{ app: string }>(
     'activity',
@@ -38,7 +41,7 @@ export function Activity() {
       enabled:
         typeof window === 'undefined'
           ? false
-          : new URL(window.location.href).hostname === 'cali.so',
+          : new URL(window.location.href).hostname === siteHostname,
     }
   )
   const [open, setOpen] = React.useState(false)
@@ -84,7 +87,7 @@ export function Activity() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                 >
-                  Cali 在使用 {appLabels[app] ?? app}
+                  {siteConfig.owner} 在使用 {appLabels[app] ?? app}
                 </motion.div>
               </Tooltip.Content>
             </Tooltip.Portal>

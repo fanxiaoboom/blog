@@ -5,6 +5,7 @@ import Balancer from 'react-wrap-balancer'
 
 import { SparkleIcon, UserSecurityIcon } from '~/assets'
 import { SocialLink } from '~/components/links/SocialLink'
+import { siteConfig } from '~/config/site.mjs'
 
 function Developer() {
   return (
@@ -79,7 +80,7 @@ export function Headline() {
         }}
       >
         <Balancer>
-          我是 Bran，试试这个blog
+          {siteConfig.description}
         </Balancer>
       </motion.p>
       <motion.div
@@ -95,14 +96,14 @@ export function Headline() {
         }}
       >
         <SocialLink
-          href="https://github.com/fanxiaoboom"
+          href={siteConfig.social.github}
           aria-label="我的 GitHub"
           platform="github"
         />
       
         <SocialLink href="/feed.xml" platform="rss" aria-label="RSS 订阅" />
         <SocialLink
-          href="fanxiaoboom@163.com"
+          href={`mailto:${siteConfig.email}`}
           aria-label="我的邮箱"
           platform="mail"
         />

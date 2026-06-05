@@ -7,6 +7,7 @@ import { PeekabooLink } from '~/components/links/PeekabooLink'
 import { Container } from '~/components/ui/Container'
 import { kvKeys } from '~/config/kv'
 import { navigationItems } from '~/config/nav'
+import { siteConfig } from '~/config/site.mjs'
 import { db } from '~/db'
 import { subscribers } from '~/db/schema'
 import { env } from '~/env.mjs'
@@ -99,12 +100,18 @@ async function LastVisitorInfo() {
 }
 
 export async function Footer() {
-  const [subs] = await db
-    .select({
-      subCount: count(),
-    })
-    .from(subscribers)
-    .where(isNotNull(subscribers.subscribedAt))
+  let subCount = 0
+
+  if (env.VERCEL_ENV === 'production') {
+    const [subs] = await db
+      .select({
+        subCount: count(),
+      })
+      .from(subscribers)
+      .where(isNotNull(subscribers.subscribedAt))
+
+    subCount = subs?.subCount ?? 0
+  }
 
   return (
     <footer className="mt-32">
@@ -112,12 +119,13 @@ export async function Footer() {
         <div className="border-t border-zinc-100 pb-16 pt-10 dark:border-zinc-700/40">
           <Container.Inner>
             <div className="mx-auto mb-8 max-w-md">
-              <Newsletter subCount={`${subs?.subCount ?? '0'}`} />
+              <Newsletter subCount={`${subCount}`} />
             </div>
             <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
               <p className="text-sm text-zinc-500/80 dark:text-zinc-400/80">
-                &copy; {new Date().getFullYear()} BooMoo Space. 网站已开源：
-                <PeekabooLink href="https://github.com/CaliCastle/cali.so">
+                &copy; {new Date().getFullYear()} {siteConfig.name}.
+                网站已开源：
+                <PeekabooLink href={`${siteConfig.social.github}/blog`}>
                   GitHub
                 </PeekabooLink>
               </p>

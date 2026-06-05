@@ -42,6 +42,7 @@ import {
   type PostIDLessCommentDto,
 } from '~/db/dto/comment.dto'
 import { url } from '~/lib'
+import { isClerkEnabled } from '~/lib/clerk'
 import { parseDisplayName } from '~/lib/string'
 
 dayjs.extend(relativeTime)
@@ -53,7 +54,34 @@ type CommentableProps = {
   blockId?: string
 }
 
-function Root({ className, blockId }: CommentableProps) {
+function Root(props: CommentableProps) {
+  return isClerkEnabled ? (
+    <ClerkCommentable {...props} />
+  ) : (
+    <LocalPreviewCommentable className={props.className} />
+  )
+}
+
+function LocalPreviewCommentable({
+  className,
+}: Pick<CommentableProps, 'className'>) {
+  return (
+    <ElegantTooltip content="本地预览未配置 Clerk">
+      <button
+        type="button"
+        disabled
+        className={clsxm(
+          'absolute -right-1 top-[5px] flex h-full origin-top-right translate-x-1.5 scale-95 transform-gpu cursor-not-allowed appearance-none items-start opacity-0 transition-all group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-60 md:right-[calc(100%+6px)]',
+          className
+        )}
+      >
+        <NewCommentIcon className="pointer-events-none h-5 w-5 select-none rounded-xl bg-zinc-100 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 md:rounded-none md:bg-transparent" />
+      </button>
+    </ElegantTooltip>
+  )
+}
+
+function ClerkCommentable({ className, blockId }: CommentableProps) {
   const pathname = usePathname()
   const { postId, comments, currentBlockId } = useSnapshot(blogPostState)
   const { user: me } = useUser()

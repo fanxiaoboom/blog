@@ -11,7 +11,8 @@ import NewGuestbookEmail from '~/emails/NewGuestbook'
 import { env } from '~/env.mjs'
 import { url } from '~/lib'
 import { resend } from '~/lib/mail'
-import { ratelimit } from '~/lib/redis'
+import { checkRateLimit } from '~/lib/redis'
+import { isDatabaseEnabled } from '~/lib/services'
 
 function getKey(id?: string) {
   return `guestbook${id ? `:${id}` : ''}`
@@ -19,8 +20,7 @@ function getKey(id?: string) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { success } = await ratelimit.limit(getKey(req.ip ?? ''))
-    if (!success) {
+    if (!(await checkRateLimit(getKey(req.ip ?? '')))) {
       return new Response('Too Many Requests', {
         status: 429,
       })
@@ -37,13 +37,19 @@ const SignGuestbookSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  if (!isDatabaseEnabled) {
+    return NextResponse.json(
+      { error: 'Guestbook is not configured for local preview.' },
+      { status: 503 }
+    )
+  }
+
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { success } = await ratelimit.limit(getKey(user.id))
-  if (!success) {
+  if (!(await checkRateLimit(getKey(user.id)))) {
     return new Response('Too Many Requests', {
       status: 429,
     })
@@ -63,7 +69,11 @@ export async function POST(req: NextRequest) {
       },
     }
 
-    if (env.NODE_ENV === 'production' && env.SITE_NOTIFICATION_EMAIL_TO) {
+    if (
+      env.NODE_ENV === 'production' &&
+      env.SITE_NOTIFICATION_EMAIL_TO &&
+      resend
+    ) {
       await resend.emails.send({
         from: emailConfig.from,
         to: env.SITE_NOTIFICATION_EMAIL_TO,

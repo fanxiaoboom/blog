@@ -1,3 +1,5 @@
+import { siteConfig } from '~/config/site.mjs'
+
 export default function BlockedPage() {
   return (
     <main className="flex h-full w-full flex-col items-center justify-center bg-zinc-200 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
@@ -6,8 +8,8 @@ export default function BlockedPage() {
       </h1>
       <span className="text-sm">
         如果你认为你不应该被禁，请联系我的邮箱{' '}
-        <a href="mailto:hi@cali.so" className="font-bold underline">
-          hi@cali.so
+        <a href={`mailto:${siteConfig.email}`} className="font-bold underline">
+          {siteConfig.email}
         </a>
       </span>
     </main>

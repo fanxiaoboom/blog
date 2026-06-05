@@ -1,15 +1,16 @@
 import * as React from 'react'
 import ReactMarkdown from 'react-markdown'
 
+import { siteConfig } from '../config/site.mjs'
 import { parseDisplayName } from '../lib/string'
 import { Button, Heading, Hr, Img, Section, Text } from './_components'
 import Layout from './Layout'
 
 const NewGuestbookEmail = ({
-  link = 'https://caliso/guestbook',
-  userFirstName = 'Cali',
-  userLastName = 'Castle',
-  userImageUrl = 'https://cali.so/icon.png',
+  link = `${siteConfig.url}/guestbook`,
+  userFirstName = siteConfig.owner,
+  userLastName = '',
+  userImageUrl = `${siteConfig.url}/icon.png`,
   commentContent = '*测试评论*\n- Wow wtf\n- Cool',
 }: {
   link?: string | null

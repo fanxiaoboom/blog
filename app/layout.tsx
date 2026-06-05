@@ -6,7 +6,9 @@ import { ClerkProvider } from '@clerk/nextjs'
 import type { Metadata, Viewport } from 'next'
 
 import { ThemeProvider } from '~/app/(main)/ThemeProvider'
+import { siteConfig } from '~/config/site.mjs'
 import { url } from '~/lib'
+import { isClerkEnabled } from '~/lib/clerk'
 import { zhCN } from '~/lib/clerkLocalizations'
 import { sansFont } from '~/lib/font'
 import { seo } from '~/lib/seo'
@@ -14,11 +16,11 @@ import { seo } from '~/lib/seo'
 export const metadata: Metadata = {
   metadataBase: seo.url,
   title: {
-    template: '%s | BooMoo Space',
+    template: `%s | ${siteConfig.name}`,
     default: seo.title,
   },
   description: seo.description,
-  keywords: 'BooMoo Space,开发者,设计师,细节控,创新',
+  keywords: siteConfig.keywords,
   manifest: '/site.webmanifest',
   robots: {
     index: true,
@@ -34,17 +36,15 @@ export const metadata: Metadata = {
   openGraph: {
     title: {
       default: seo.title,
-      template: '%s | BooMoo Space',
+      template: `%s | ${siteConfig.name}`,
     },
     description: seo.description,
-    siteName: 'BooMoo Space',
-    locale: 'zh_CN',
+    siteName: siteConfig.name,
+    locale: siteConfig.locale,
     type: 'website',
-    url: 'https://boomoo.space',
+    url: siteConfig.url,
   },
   twitter: {
-    site: '@thecalicastle',
-    creator: '@thecalicastle',
     card: 'summary_large_image',
     title: seo.title,
     description: seo.description,
@@ -69,24 +69,28 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <ClerkProvider localization={zhCN}>
-      <html
-        lang="zh-CN"
-        className={`${sansFont.variable} m-0 h-full p-0 font-sans antialiased`}
-        suppressHydrationWarning
-      >
-        <body className="flex h-full flex-col">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+  const content = (
+    <html
+      lang={siteConfig.language}
+      className={`${sansFont.variable} m-0 h-full p-0 font-sans antialiased`}
+      suppressHydrationWarning
+    >
+      <body className="flex h-full flex-col">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
   )
+
+  if (!isClerkEnabled) {
+    return content
+  }
+
+  return <ClerkProvider localization={zhCN}>{content}</ClerkProvider>
 }
