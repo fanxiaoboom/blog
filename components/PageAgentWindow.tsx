@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, PointerEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { SparkleIcon, XIcon } from '~/assets'
 
