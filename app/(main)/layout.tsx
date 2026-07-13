@@ -6,6 +6,7 @@ import { Suspense } from 'react'
 import { Footer } from '~/app/(main)/Footer'
 import { Header } from '~/app/(main)/Header'
 import { QueryProvider } from '~/app/QueryProvider'
+import { PageAgentWindow } from '~/components/PageAgentWindow'
 
 export default function BlogLayout({
   children,
@@ -30,6 +31,7 @@ export default function BlogLayout({
           <Suspense>
             <Footer />
           </Suspense>
+          <PageAgentWindow />
         </div>
       </QueryProvider>
 
