@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm turbo build",
+  "buildCommand": "pnpm build",
   "github": {
     "silent": true
   }
