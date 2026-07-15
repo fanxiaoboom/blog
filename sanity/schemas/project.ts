@@ -6,12 +6,15 @@ import { Layers3Icon } from '~/assets'
 export const Project = z.object({
   _id: z.string(),
   name: z.string(),
-  url: z.string().url(),
-  description: z.string(),
-  icon: z.object({
-    _ref: z.string(),
-    asset: z.any(),
-  }),
+  url: z.string().url().nullable().optional(),
+  description: z.string().nullable().optional(),
+  icon: z
+    .object({
+      _ref: z.string(),
+      asset: z.any(),
+    })
+    .nullable()
+    .optional(),
 })
 export type Project = z.infer<typeof Project>
 
