@@ -19,7 +19,7 @@ function Developer() {
 
 function Designer() {
   return (
-    <span className="group relative bg-black/5 p-1 dark:bg-white/5">
+    <span className="group relative whitespace-nowrap bg-black/5 p-1 dark:bg-white/5">
       <span className="pointer-events-none absolute inset-0 border border-lime-700/90 opacity-70 group-hover:border-dashed group-hover:opacity-100 dark:border-lime-400/90">
         <span className="absolute -left-[3.5px] -top-[3.5px] size-1.5 border border-lime-700 bg-zinc-50 dark:border-lime-400" />
         <span className="absolute -bottom-[3.5px] -right-[3.5px] size-1.5 border border-lime-700 bg-zinc-50 dark:border-lime-400" />
@@ -53,7 +53,7 @@ export function Headline() {
   return (
     <div className="max-w-2xl">
       <motion.h1
-        className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl"
+        className="text-2xl leading-8 font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl sm:leading-[3.5rem]"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{

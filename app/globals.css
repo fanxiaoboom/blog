@@ -4,10 +4,36 @@
 
 html,
 body {
+  min-height: 100%;
   text-rendering: optimizeLegibility;
   background-color: var(--bg-color);
   scroll-behavior: smooth;
   scroll-padding-top: 3rem;
+}
+
+@supports (height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
+}
+
+/* Only takes effect after the app is launched from an installed PWA. */
+.pwa-standalone .pwa-safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Keep touch scrolling while removing the browser scrollbar from mobile edges. */
+@media (max-width: 767px) {
+  html,
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 html.light {

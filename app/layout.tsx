@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import type { Metadata, Viewport } from 'next'
 
 import { ThemeProvider } from '~/app/(main)/ThemeProvider'
+import { PwaRegistration } from '~/components/PwaRegistration'
 import { siteConfig } from '~/config/site.mjs'
 import { url } from '~/lib'
 import { isClerkEnabled } from '~/lib/clerk'
@@ -20,8 +21,17 @@ export const metadata: Metadata = {
     default: seo.title,
   },
   description: seo.description,
+  applicationName: siteConfig.name,
   keywords: siteConfig.keywords,
   manifest: '/site.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: siteConfig.name,
+  },
+  formatDetection: {
+    telephone: false,
+  },
   robots: {
     index: true,
     follow: true,
@@ -58,6 +68,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: dark)', color: '#000212' },
     { media: '(prefers-color-scheme: light)', color: '#fafafa' },
@@ -83,6 +94,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <PwaRegistration />
         </ThemeProvider>
       </body>
     </html>

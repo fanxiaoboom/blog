@@ -25,7 +25,7 @@ export default function BlogLayout({
       </div>
 
       <QueryProvider>
-        <div className="relative text-zinc-800 dark:text-zinc-200">
+        <div className="pwa-safe-top relative text-zinc-800 dark:text-zinc-200">
           <Header />
           <main>{children}</main>
           <Suspense>

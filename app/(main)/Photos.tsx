@@ -11,10 +11,10 @@ export function Photos({ photos }: { photos: string[] }) {
 
   React.useEffect(() => {
     const handleResize = () => {
-      // 640px is the breakpoint for md
-      if (window.innerWidth < 640) {
+      // Keep touch targets and photo proportions comfortable on phones/tablets.
+      if (window.innerWidth < 1024) {
         setIsCompact(true)
-        return setWidth(window.innerWidth / 2 - 64)
+        return setWidth(Math.min(280, Math.max(168, window.innerWidth * 0.62)))
       }
 
       setWidth(window.innerWidth / photos.length - 4 * photos.length)
@@ -38,11 +38,11 @@ export function Photos({ photos }: { photos: string[] }) {
         type: 'spring',
       }}
     >
-      <div className="-my-4 flex w-full snap-x snap-proximity scroll-pl-4 justify-start gap-4 overflow-x-auto px-4 py-4 sm:gap-6 md:justify-center md:overflow-x-hidden md:px-0">
+      <div className="-my-4 flex w-full snap-x snap-proximity scroll-pl-5 justify-start gap-4 overflow-x-auto px-5 py-4 sm:gap-6 sm:px-8 lg:justify-center lg:overflow-x-hidden lg:px-0">
         {photos.map((image, idx) => (
           <motion.div
             key={idx}
-            className="relative h-40 flex-none shrink-0 snap-start overflow-hidden rounded-xl bg-zinc-100 ring-2 ring-lime-800/20 dark:bg-zinc-800 dark:ring-lime-300/10 md:h-72 md:rounded-3xl"
+            className="relative h-40 flex-none shrink-0 snap-start overflow-hidden rounded-xl bg-zinc-100 ring-2 ring-lime-800/20 dark:bg-zinc-800 dark:ring-lime-300/10 sm:h-56 sm:rounded-2xl lg:h-72 lg:rounded-3xl"
             animate={{
               width,
               opacity: isCompact ? 1 : 0.85,
@@ -65,7 +65,7 @@ export function Photos({ photos }: { photos: string[] }) {
               alt=""
               width={500}
               height={500}
-              sizes="(min-width: 640px) 18rem, 11rem"
+              sizes="(min-width: 1024px) 18rem, (min-width: 640px) 17.5rem, 62vw"
               className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover"
               priority
             />

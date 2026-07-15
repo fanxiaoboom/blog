@@ -116,7 +116,7 @@ export async function Footer() {
   return (
     <footer className="mt-32">
       <Container.Outer>
-        <div className="border-t border-zinc-100 pb-16 pt-10 dark:border-zinc-700/40">
+        <div className="border-t border-zinc-100 pb-[calc(4rem+env(safe-area-inset-bottom))] pt-10 dark:border-zinc-700/40">
           <Container.Inner>
             <div className="mx-auto mb-8 max-w-md">
               <Newsletter subCount={`${subCount}`} />
