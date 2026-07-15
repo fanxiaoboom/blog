@@ -1,5 +1,6 @@
 'use client'
 
+import { useUser } from '@clerk/nextjs'
 import { Popover, type PopoverProps, Transition } from '@headlessui/react'
 import { clsxm } from '@zolplay/utils'
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion'
@@ -8,6 +9,7 @@ import { usePathname } from 'next/navigation'
 import React from 'react'
 
 import { navigationItems } from '~/config/nav'
+import { isClerkEnabled } from '~/lib/clerk'
 
 function NavItem({
   href,
@@ -39,6 +41,20 @@ function NavItem({
       </Link>
     </li>
   )
+}
+
+function StudioNavItem({ mobile = false }: { mobile?: boolean }) {
+  const { isLoaded, user } = useUser()
+
+  if (!isLoaded || !user?.publicMetadata.siteOwner) {
+    return null
+  }
+
+  if (mobile) {
+    return <MobileNavItem href="/studio">内容管理</MobileNavItem>
+  }
+
+  return <NavItem href="/studio">内容管理</NavItem>
 }
 
 function Desktop({
@@ -85,6 +101,7 @@ function Desktop({
             {text}
           </NavItem>
         ))}
+        {isClerkEnabled && <StudioNavItem />}
       </ul>
     </nav>
   )
@@ -179,6 +196,7 @@ function Mobile(props: PopoverProps<'div'>) {
                     {text}
                   </MobileNavItem>
                 ))}
+                {isClerkEnabled && <StudioNavItem mobile />}
               </ul>
             </nav>
           </Popover.Panel>

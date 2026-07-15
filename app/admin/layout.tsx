@@ -1,7 +1,5 @@
-import { currentUser } from '@clerk/nextjs'
-import { redirect } from 'next/navigation'
-
 import { Container } from '~/components/ui/Container'
+import { requireSiteOwner } from '~/lib/permissions'
 
 import { Sidebar } from './Sidebar'
 
@@ -10,10 +8,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const user = await currentUser()
-  if (!user || !user.publicMetadata.siteOwner) {
-    redirect('/')
-  }
+  await requireSiteOwner()
 
   return (
     <div>
