@@ -28,8 +28,8 @@ import {
 import { Avatar } from '~/components/Avatar'
 import { Container } from '~/components/ui/Container'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { url } from '~/lib'
 import { isClerkEnabled } from '~/lib/clerk'
+import { clientUrl } from '~/lib/clientUrl'
 import { clamp } from '~/lib/math'
 export function Header() {
   const isHomePage = usePathname() === '/'
@@ -342,7 +342,7 @@ function ClerkUserInfo() {
           exit={{ opacity: 0, x: 25 }}
         >
           <UserButton
-            afterSignOutUrl={url(pathname).href}
+            afterSignOutUrl={clientUrl(pathname)}
             appearance={{
               elements: {
                 avatarBox: 'w-9 h-9 ring-2 ring-white/20',
@@ -365,7 +365,7 @@ function ClerkUserInfo() {
         >
           <Tooltip.Provider disableHoverableContent>
             <Tooltip.Root open={tooltipOpen} onOpenChange={setTooltipOpen}>
-              <SignInButton mode="modal" redirectUrl={url(pathname).href}>
+              <SignInButton mode="modal" redirectUrl={clientUrl(pathname)}>
                 <Tooltip.Trigger asChild>
                   <button
                     type="button"

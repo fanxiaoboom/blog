@@ -7,8 +7,8 @@ import React from 'react'
 import { UserArrowLeftIcon } from '~/assets'
 import { Button } from '~/components/ui/Button'
 import { type GuestbookDto } from '~/db/dto/guestbook.dto'
-import { url } from '~/lib'
 import { isClerkEnabled } from '~/lib/clerk'
+import { clientUrl } from '~/lib/clientUrl'
 
 import { GuestbookFeeds } from './GuestbookFeeds'
 import { GuestbookInput } from './GuestbookInput'
@@ -31,7 +31,7 @@ export function Guestbook(props: { messages?: GuestbookDto[] }) {
   return (
     <section className="max-w-2xl">
       <SignedOut>
-        <SignInButton mode="modal" redirectUrl={url(pathname).href}>
+        <SignInButton mode="modal" redirectUrl={clientUrl(pathname)}>
           <Button type="button">
             <UserArrowLeftIcon className="mr-1 h-5 w-5" />
             登录后才可以留言噢
