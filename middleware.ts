@@ -1,6 +1,6 @@
 import { authMiddleware } from '@clerk/nextjs'
 import { get } from '@vercel/edge-config'
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextFetchEvent, type NextRequest, NextResponse } from 'next/server'
 
 import { kvKeys } from '~/config/kv'
 import { env } from '~/env.mjs'
@@ -9,10 +9,10 @@ import { getIP } from '~/lib/ip'
 import { redis } from '~/lib/redis'
 
 export const config = {
-  matcher: ['/((?!_next|studio|.*\\..*).*)'],
+  matcher: ['/((?!_next|.*\\..*).*)'],
 }
 
-async function beforeAuthMiddleware(req: NextRequest) {
+async function beforeAuthMiddleware(req: NextRequest, evt: NextFetchEvent) {
   const { geo, nextUrl } = req
   const isApi = nextUrl.pathname.startsWith('/api/')
 
@@ -45,7 +45,12 @@ async function beforeAuthMiddleware(req: NextRequest) {
     const countryInfo = countries.find((x) => x.cca2 === country)
     if (countryInfo) {
       const flag = countryInfo.flag
-      await redis.set(kvKeys.currentVisitor, { country, city, flag })
+      // Visitor telemetry must never delay authentication or protected routes.
+      evt.waitUntil(
+        redis
+          .set(kvKeys.currentVisitor, { country, city, flag })
+          .catch(() => undefined)
+      )
     }
   }
 
@@ -61,7 +66,6 @@ export default hasClerkSecret
       beforeAuth: beforeAuthMiddleware,
       publicRoutes: [
         '/',
-        '/studio(.*)',
         '/api(.*)',
         '/blog(.*)',
         '/confirm(.*)',
