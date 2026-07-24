@@ -14,12 +14,22 @@ import { Card } from '~/components/ui/Card'
 import { urlForImage } from '~/sanity/lib/image'
 import { type Project } from '~/sanity/schemas/project'
 
-export function ProjectCard({ project }: { project: Project }) {
-  const { _id, url, icon, name, description } = project
+type DisplayProject = Omit<Project, 'url'> & {
+  url?: string | null
+  internal?: boolean
+}
+
+export function ProjectCard({ project }: { project: DisplayProject }) {
+  const { _id, url, icon, name, description, internal } = project
   const iconUrl = icon
     ? urlForImage(icon)?.size(100, 100).auto('format').url()
     : undefined
-  const host = url ? new URL(url).host : undefined
+  const isExternal = Boolean(url && !internal && /^https?:\/\//.test(url))
+  const host = url
+    ? isExternal
+      ? new URL(url).host
+      : 'boomoospace'
+    : undefined
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -62,7 +72,7 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
       <h2 className="mt-6 text-base font-bold text-zinc-800 dark:text-zinc-100">
         {url ? (
-          <Card.Link href={url} target="_blank">
+          <Card.Link href={url} target={isExternal ? '_blank' : undefined}>
             {name}
           </Card.Link>
         ) : (
@@ -72,8 +82,8 @@ export function ProjectCard({ project }: { project: Project }) {
       <Card.Description>{description}</Card.Description>
       {host && (
         <p className="pointer-events-none relative z-40 mt-6 flex items-center text-sm font-medium text-zinc-400 transition group-hover:-translate-y-0.5 group-hover:text-lime-600 dark:text-zinc-200 dark:group-hover:text-lime-400">
-          <span className="mr-2">{host}</span>
-          <ExternalLinkIcon className="h-4 w-4 flex-none" />
+          <span className={isExternal ? 'mr-2' : undefined}>{host}</span>
+          {isExternal && <ExternalLinkIcon className="h-4 w-4 flex-none" />}
         </p>
       )}
 
