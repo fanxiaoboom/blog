@@ -406,7 +406,7 @@ export function StickerForgeApp() {
     if (!target) return
 
     let disposed = false
-    let settleTimer: ReturnType<typeof window.setTimeout> | null = null
+    let settleTimer: number | null = null
     const clearSettleTimer = () => {
       if (settleTimer === null) return
       window.clearTimeout(settleTimer)
