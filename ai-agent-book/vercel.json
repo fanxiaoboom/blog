@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "python3 -m venv /tmp/ai-agent-book-venv && /tmp/ai-agent-book-venv/bin/python -m pip install --disable-pip-version-check -r requirements-docs.txt && bash scripts/build_site.sh && /tmp/ai-agent-book-venv/bin/python -m mkdocs build --strict",
+  "outputDirectory": "site",
+  "cleanUrls": true
+}
