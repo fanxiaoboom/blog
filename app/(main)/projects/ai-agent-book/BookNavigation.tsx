@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   progressUpdatedEvent,
@@ -38,6 +38,7 @@ export function BookNavigation({
   const [collapsed, setCollapsed] = useState(false)
   const [progress, setProgress] = useState<StoredProgress>({ completed: {}, scrollDepth: {} })
   const [activeSectionId, setActiveSectionId] = useState<string>()
+  const navigationLockUntil = useRef(0)
 
   useEffect(() => {
     const syncProgress = () => setProgress(readBookProgress())
@@ -70,7 +71,9 @@ export function BookNavigation({
     const syncActiveSection = () => {
       window.cancelAnimationFrame(frame)
       frame = window.requestAnimationFrame(() => {
-        const readingOffset = 160
+        if (Date.now() < navigationLockUntil.current) return
+
+        const readingOffset = 192
         const passedSections = sections.filter((section) => {
           const heading = document.getElementById(section.id)
           return heading && heading.getBoundingClientRect().top <= readingOffset
@@ -153,7 +156,10 @@ export function BookNavigation({
                       <a
                         href={`#${section.id}`}
                         aria-current={activeSectionId === section.id ? 'location' : undefined}
-                        onClick={() => setActiveSectionId(section.id)}
+                        onClick={() => {
+                          navigationLockUntil.current = Date.now() + 800
+                          setActiveSectionId(section.id)
+                        }}
                         className={`block rounded-md px-2 py-1.5 leading-5 outline-offset-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime-600 ${section.depth === 3 ? 'text-[11px]' : 'text-xs'} ${activeSectionId === section.id ? 'bg-lime-100 font-semibold text-lime-900 dark:bg-lime-400/15 dark:text-lime-300' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100'}`}
                       >
                         {section.title}

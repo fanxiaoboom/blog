@@ -79,9 +79,9 @@ export default async function AiAgentBookPage({ params }: { params: { slug: stri
                   return external ? <a href={target} target="_blank" rel="noreferrer">{children}</a> : <Link href={target}>{children}</Link>
                 },
                 img: ({ src, alt }) => <img src={resolveImage(src)} alt={alt || ''} loading="lazy" />,
-                h1: ({ children }) => <h1 className="mb-10 mt-0 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">{children}</h1>,
-                h2: ({ children }) => <h2 id={getNextSectionId(children)} className="mt-14 border-b border-zinc-200 pb-3 text-2xl font-bold tracking-tight text-zinc-900 dark:border-zinc-700 dark:text-zinc-50">{children}</h2>,
-                h3: ({ children }) => <h3 id={getNextSectionId(children)} className="mt-10 text-xl font-semibold text-zinc-900 dark:text-zinc-50">{children}</h3>,
+                h1: ({ children }) => <h1 className="mb-10 mt-0 scroll-mt-40 text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl dark:text-zinc-50">{children}</h1>,
+                h2: ({ children }) => <h2 id={getNextSectionId(children)} className="mt-14 scroll-mt-40 border-b border-zinc-200 pb-3 text-2xl font-bold tracking-tight text-zinc-900 dark:border-zinc-700 dark:text-zinc-50">{children}</h2>,
+                h3: ({ children }) => <h3 id={getNextSectionId(children)} className="mt-10 scroll-mt-40 text-xl font-semibold text-zinc-900 dark:text-zinc-50">{children}</h3>,
               }}
             >
               {content}
