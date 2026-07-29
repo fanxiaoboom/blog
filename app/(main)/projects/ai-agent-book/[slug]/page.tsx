@@ -68,7 +68,7 @@ export default async function AiAgentBookPage({ params }: { params: { slug: stri
         </aside>
         <article className="min-w-0 max-w-3xl">
           <Link href="/projects/ai-agent-book" className="text-sm font-medium text-zinc-500 hover:text-lime-700 dark:text-zinc-400 dark:hover:text-lime-400">← 返回阅读项目</Link>
-          <LearningProgress chapters={chapters} currentSlug={page.progressChapter ? page.slug : undefined} />
+          <LearningProgress chapters={chapters} currentSlug={page.progressChapter ? page.slug : undefined} sections={sections} />
           <Prose className="max-w-none prose-zinc prose-headings:scroll-mt-24 prose-a:text-lime-700 hover:prose-a:text-lime-600 dark:prose-invert dark:prose-a:text-lime-400">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
