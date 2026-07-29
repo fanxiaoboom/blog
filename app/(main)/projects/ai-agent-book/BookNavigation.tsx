@@ -74,6 +74,8 @@ export function BookNavigation({
   const [collapsed, setCollapsed] = useState(false)
   const [progress, setProgress] = useState<StoredProgress>({ completed: {}, completedSections: {}, scrollDepth: {} })
   const [activeSectionId, setActiveSectionId] = useState<string>()
+  const navigationRef = useRef<HTMLElement>(null)
+  const sectionLinkRefs = useRef(new Map<string, HTMLAnchorElement>())
   const navigationLockUntil = useRef(0)
 
   useEffect(() => {
@@ -126,7 +128,33 @@ export function BookNavigation({
       window.removeEventListener('scroll', syncActiveSection)
       window.removeEventListener('resize', syncActiveSection)
     }
-  }, [activeSlug, sections])
+  }, [activeSlug, collapsed, sections])
+
+  useEffect(() => {
+    if (collapsed || !activeSectionId) return
+
+    const frame = window.requestAnimationFrame(() => {
+      const navigation = navigationRef.current
+      const activeLink = sectionLinkRefs.current.get(activeSectionId)
+      if (!navigation || !activeLink || navigation.scrollHeight <= navigation.clientHeight) return
+
+      // Keep the current section in the visible part of the directory without
+      // calling scrollIntoView, which could also move the article itself.
+      const navigationRect = navigation.getBoundingClientRect()
+      const stickyHeader = navigation.firstElementChild?.getBoundingClientRect().height ?? 0
+      const visibleTop = navigationRect.top + stickyHeader + 8
+      const visibleBottom = navigationRect.bottom - 12
+      const linkRect = activeLink.getBoundingClientRect()
+
+      if (linkRect.top < visibleTop) {
+        navigation.scrollTop += linkRect.top - visibleTop
+      } else if (linkRect.bottom > visibleBottom) {
+        navigation.scrollTop += linkRect.bottom - visibleBottom
+      }
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [activeSectionId, collapsed])
 
   const toggleChapter = (slug: string, sectionKeys: string[] = []) => {
     const chapterCompleted = !progress.completed[slug]
@@ -184,6 +212,7 @@ export function BookNavigation({
     <nav
       aria-label="本书目录"
       tabIndex={0}
+      ref={navigationRef}
       className="w-full overflow-x-hidden rounded-2xl border border-zinc-200 bg-white/70 p-2 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime-600 dark:border-zinc-700/60 dark:bg-zinc-800/50 lg:max-h-[calc(100dvh-7rem)] lg:w-[17rem] lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
     >
       <div className="sticky top-0 z-10 flex min-h-11 items-center justify-between gap-2 bg-white/95 px-2 backdrop-blur dark:bg-zinc-800/95">
@@ -227,6 +256,10 @@ export function BookNavigation({
                         <a
                           href={`#${section.id}`}
                           aria-current={activeSectionId === section.id ? 'location' : undefined}
+                          ref={(element) => {
+                            if (element) sectionLinkRefs.current.set(section.id, element)
+                            else sectionLinkRefs.current.delete(section.id)
+                          }}
                           onClick={() => {
                             navigationLockUntil.current = Date.now() + 800
                             setActiveSectionId(section.id)
