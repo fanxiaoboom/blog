@@ -100,6 +100,10 @@ export function BookNavigation({
   }, [])
 
   useEffect(() => {
+    window.dispatchEvent(new Event('boomoospace-ai-agent-book-navigation-layout-change'))
+  }, [collapsed])
+
+  useEffect(() => {
     if (!activeSlug || sections.length === 0) {
       setActiveSectionId(undefined)
       return
