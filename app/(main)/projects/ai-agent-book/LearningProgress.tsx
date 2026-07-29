@@ -22,10 +22,12 @@ export function LearningProgress({
   chapters,
   currentSlug,
   sections = [],
+  sectionKeys = [],
 }: {
   chapters: ProgressChapter[]
   currentSlug?: string
   sections?: Array<{ id: string }>
+  sectionKeys?: string[]
 }) {
   const [progress, setProgress] = useState<StoredProgress>({
     completed: {},
@@ -72,6 +74,27 @@ export function LearningProgress({
   }, [progress, ready])
 
   useEffect(() => {
+    if (!ready || sectionKeys.length === 0) return
+
+    const legacySectionKeys = sectionKeys.filter((sectionKey) => {
+      const separatorIndex = sectionKey.indexOf(':')
+      const chapterSlug = sectionKey.slice(0, separatorIndex)
+      return progress.completed[chapterSlug] && progress.completedSections[sectionKey] === undefined
+    })
+    if (legacySectionKeys.length === 0) return
+
+    const nextProgress: StoredProgress = {
+      ...progress,
+      completedSections: {
+        ...progress.completedSections,
+        ...Object.fromEntries(legacySectionKeys.map((sectionKey) => [sectionKey, true])),
+      },
+    }
+    setProgress(nextProgress)
+    persistBookProgress(nextProgress)
+  }, [progress, ready, sectionKeys])
+
+  useEffect(() => {
     if (!ready || !currentSlug) return
 
     let timeout: number | undefined
@@ -102,7 +125,13 @@ export function LearningProgress({
     () => chapters.filter((chapter) => progress.completed[chapter.slug]).length,
     [chapters, progress.completed]
   )
-  const percent = Math.round((completedCount / chapters.length) * 100)
+  const completedBookSectionCount = useMemo(
+    () => sectionKeys.filter((sectionKey) => progress.completedSections[sectionKey]).length,
+    [progress.completedSections, sectionKeys]
+  )
+  const percent = sectionKeys.length
+    ? Math.round((completedBookSectionCount / sectionKeys.length) * 100)
+    : 0
   const currentChapter = chapters.find((chapter) => chapter.slug === currentSlug)
   const resume = chapters.find((chapter) => chapter.slug === progress.lastRead)
   const completedSectionCount = currentSlug
@@ -136,7 +165,8 @@ export function LearningProgress({
         <div>
           <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">学习进度</p>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            已完成 {completedCount} / {chapters.length} 章
+            已完成 {completedBookSectionCount} / {sectionKeys.length} 节
+            {chapters.length ? ` · 已完成 ${completedCount} / ${chapters.length} 章` : ''}
             {currentChapter && sections.length ? ` · 本章已完成 ${completedSectionCount} / ${sections.length} 节` : ''}
             {currentChapter && progress.scrollDepth[currentSlug || '']
               ? ` · 本章已阅读 ${progress.scrollDepth[currentSlug || '']}%`
@@ -148,7 +178,7 @@ export function LearningProgress({
       <div
         className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700"
         role="progressbar"
-        aria-label="书籍完成进度"
+        aria-label="书籍小节完成进度"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={percent}

@@ -16,6 +16,11 @@ export type BookSection = {
   title: string
 }
 
+export type BookProgressSection = {
+  key: string
+  slug: string
+}
+
 export const bookPages: BookPage[] = [
   { slug: 'introduction', file: 'introduction.md', title: '引言' },
   { slug: 'chapter-1', file: 'chapter1.md', title: '第 1 章 · Agent 基础知识', progressChapter: 1 },
@@ -33,6 +38,7 @@ export const bookPages: BookPage[] = [
 ]
 
 const contentDirectory = path.join(process.cwd(), 'ai-agent-book', 'book')
+let progressSectionsPromise: Promise<BookProgressSection[]> | undefined
 
 export function getBookPage(slug: string) {
   return bookPages.find((page) => page.slug === slug)
@@ -44,6 +50,24 @@ export async function getBookPageContent(slug: string) {
 
   const content = await readFile(path.join(contentDirectory, page.file), 'utf8')
   return { ...page, content }
+}
+
+export function getBookProgressSections() {
+  if (!progressSectionsPromise) {
+    progressSectionsPromise = Promise.all(
+      bookPages
+        .filter((page) => page.progressChapter)
+        .map(async (page) => {
+          const content = await readFile(path.join(contentDirectory, page.file), 'utf8')
+          return getBookSections(content).map((section) => ({
+            slug: page.slug,
+            key: `${page.slug}:${section.id}`,
+          }))
+        })
+    ).then((sections) => sections.flat())
+  }
+
+  return progressSectionsPromise
 }
 
 export function getBookHref(slug: string) {

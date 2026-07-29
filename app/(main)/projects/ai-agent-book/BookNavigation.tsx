@@ -64,10 +64,12 @@ export function BookNavigation({
   pages,
   activeSlug,
   sections = [],
+  sectionKeysByPage = {},
 }: {
   pages: BookPage[]
   activeSlug?: string
   sections?: BookSection[]
+  sectionKeysByPage?: Record<string, string[]>
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const [progress, setProgress] = useState<StoredProgress>({ completed: {}, completedSections: {}, scrollDepth: {} })
@@ -126,15 +128,15 @@ export function BookNavigation({
     }
   }, [activeSlug, sections])
 
-  const toggleChapter = (slug: string, sectionIds: string[] = []) => {
+  const toggleChapter = (slug: string, sectionKeys: string[] = []) => {
     const chapterCompleted = !progress.completed[slug]
     const nextProgress: StoredProgress = {
       ...progress,
       completed: { ...progress.completed, [slug]: chapterCompleted },
-      completedSections: sectionIds.length
+      completedSections: sectionKeys.length
         ? {
             ...progress.completedSections,
-            ...Object.fromEntries(sectionIds.map((sectionId) => [getSectionProgressKey(slug, sectionId), chapterCompleted])),
+            ...Object.fromEntries(sectionKeys.map((sectionKey) => [sectionKey, chapterCompleted])),
           }
         : progress.completedSections,
     }
@@ -213,7 +215,7 @@ export function BookNavigation({
                   <CompletionToggle
                     completed={completed}
                     label={completed ? `取消完成${page.title}` : `标记${page.title}已完成`}
-                    onClick={() => toggleChapter(page.slug, active ? sections.map((section) => section.id) : [])}
+                    onClick={() => toggleChapter(page.slug, sectionKeysByPage[page.slug])}
                   />
                 )}
               </div>
