@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
 import { BookNavigation } from '~/app/(main)/projects/ai-agent-book/BookNavigation'
+import { BackToTopButton } from '~/app/(main)/projects/ai-agent-book/BackToTopButton'
 import { LearningProgress } from '~/app/(main)/projects/ai-agent-book/LearningProgress'
 import { Prose } from '~/components/Prose'
 import { Container } from '~/components/ui/Container'
@@ -94,6 +95,7 @@ export default async function AiAgentBookPage({ params }: { params: { slug: stri
           </Prose>
         </article>
       </div>
+      <BackToTopButton />
     </Container>
   )
 }
