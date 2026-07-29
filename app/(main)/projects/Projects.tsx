@@ -10,9 +10,19 @@ const stickerForgeProject = {
   internal: true,
 }
 
+const aiAgentBookProject = {
+  _id: 'boomoospace-ai-agent-book',
+  name: '深入理解 AI Agent',
+  url: '/projects/ai-agent-book',
+  description: 'AI Agent 技术书阅读计划，支持章节完成、阅读深度和本地学习进度。',
+  icon: null,
+  internal: true,
+}
+
 export async function Projects() {
   const projects = [
     ...((await getSettings()).projects || []),
+    aiAgentBookProject,
     stickerForgeProject,
   ]
 
