@@ -120,7 +120,10 @@ export function BookNavigation({
           const heading = document.getElementById(section.id)
           return heading && heading.getBoundingClientRect().top <= readingOffset
         })
-        setActiveSectionId(passedSections[passedSections.length - 1]?.id)
+        const nextActiveSectionId = passedSections[passedSections.length - 1]?.id
+        setActiveSectionId((currentActiveSectionId) =>
+          currentActiveSectionId === nextActiveSectionId ? currentActiveSectionId : nextActiveSectionId
+        )
       })
     }
 
@@ -142,19 +145,22 @@ export function BookNavigation({
       const activeLink = sectionLinkRefs.current.get(activeSectionId)
       if (!navigation || !activeLink || navigation.scrollHeight <= navigation.clientHeight) return
 
-      // Keep the current section in the visible part of the directory without
-      // calling scrollIntoView, which could also move the article itself.
+      // Only scroll the directory itself, never the article. The current item
+      // is centered in the usable area below the sticky directory header.
       const navigationRect = navigation.getBoundingClientRect()
       const stickyHeader = navigation.firstElementChild?.getBoundingClientRect().height ?? 0
-      const visibleTop = navigationRect.top + stickyHeader + 8
-      const visibleBottom = navigationRect.bottom - 12
       const linkRect = activeLink.getBoundingClientRect()
+      const visibleHeight = navigation.clientHeight - stickyHeader
+      const targetTop = navigation.scrollTop
+        + linkRect.top
+        - navigationRect.top
+        - stickyHeader
+        - (visibleHeight - activeLink.clientHeight) / 2
+      const maxScrollTop = navigation.scrollHeight - navigation.clientHeight
+      const nextScrollTop = Math.min(Math.max(targetTop, 0), maxScrollTop)
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-      if (linkRect.top < visibleTop) {
-        navigation.scrollTop += linkRect.top - visibleTop
-      } else if (linkRect.bottom > visibleBottom) {
-        navigation.scrollTop += linkRect.bottom - visibleBottom
-      }
+      navigation.scrollTo({ top: nextScrollTop, behavior: reduceMotion ? 'auto' : 'smooth' })
     })
 
     return () => window.cancelAnimationFrame(frame)
@@ -217,9 +223,9 @@ export function BookNavigation({
       aria-label="本书目录"
       tabIndex={0}
       ref={navigationRef}
-      className="w-full overflow-x-hidden rounded-2xl border border-zinc-200 bg-white/70 p-2 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime-600 dark:border-zinc-700/60 dark:bg-zinc-800/50 lg:max-h-[calc(100dvh-7rem)] lg:w-[17rem] lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
+      className="w-full overflow-x-hidden rounded-2xl border border-zinc-200 bg-white/70 px-2 pb-2 pt-0 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime-600 dark:border-zinc-700/60 dark:bg-zinc-800/50 lg:max-h-[calc(100dvh-7rem)] lg:w-[17rem] lg:overflow-y-auto lg:overscroll-contain lg:[-ms-overflow-style:none] lg:[scrollbar-width:none] lg:[&::-webkit-scrollbar]:hidden"
     >
-      <div className="sticky top-0 z-10 flex min-h-11 items-center justify-between gap-2 bg-white/95 px-2 backdrop-blur dark:bg-zinc-800/95">
+      <div className="sticky top-0 z-20 -mx-2 flex h-12 items-center justify-between gap-2 border-b border-zinc-200 bg-white px-3 shadow-[0_6px_12px_-12px_rgba(24,24,27,0.45)] dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-black/30">
         <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">目录</p>
         <button
           type="button"
@@ -240,7 +246,7 @@ export function BookNavigation({
           const completed = Boolean(page.progressChapter && progress.completed[page.slug])
           return (
             <li key={page.slug}>
-              <div className={`flex items-center rounded-lg text-sm transition ${active ? 'bg-lime-100 font-semibold text-lime-900 dark:bg-lime-400/15 dark:text-lime-300' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100'}`}>
+              <div className={`flex items-center rounded-lg text-sm transition-[background-color,color,box-shadow] duration-200 ease-out motion-reduce:transition-none ${active ? 'bg-lime-100 font-semibold text-lime-900 shadow-sm shadow-lime-900/5 dark:bg-lime-400/15 dark:text-lime-300 dark:shadow-none' : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100'}`}>
                 <Link href={getBookHref(page.slug)} aria-current={active ? 'page' : undefined} className="min-h-11 min-w-0 flex-1 px-2 py-2">
                   {page.title}
                 </Link>
@@ -256,7 +262,7 @@ export function BookNavigation({
                 <ul aria-label={`${page.title} 章节目录`} className="my-1 ml-2 space-y-0.5 border-l border-zinc-200 py-1 pl-2 dark:border-zinc-700">
                   {sections.map((section) => (
                     <li key={section.id} className={section.depth === 3 ? 'ml-2' : ''}>
-                      <div className={`flex items-center rounded-md transition ${activeSectionId === section.id ? 'bg-lime-100 font-semibold text-lime-900 dark:bg-lime-400/15 dark:text-lime-300' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100'}`}>
+                      <div className={`flex items-center rounded-md transition-[background-color,color,box-shadow] duration-200 ease-out motion-reduce:transition-none ${activeSectionId === section.id ? 'bg-lime-100 font-semibold text-lime-900 shadow-sm shadow-lime-900/5 dark:bg-lime-400/15 dark:text-lime-300 dark:shadow-none' : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-700/60 dark:hover:text-zinc-100'}`}>
                         <a
                           href={`#${section.id}`}
                           aria-current={activeSectionId === section.id ? 'location' : undefined}
@@ -268,7 +274,7 @@ export function BookNavigation({
                             navigationLockUntil.current = Date.now() + 800
                             setActiveSectionId(section.id)
                           }}
-                          className={`min-h-11 min-w-0 flex-1 px-2 py-1.5 leading-5 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime-600 ${section.depth === 3 ? 'text-[11px]' : 'text-xs'}`}
+                          className={`min-h-11 min-w-0 flex-1 px-2 py-1.5 leading-5 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-lime-600 ${section.depth === 3 ? 'text-xs' : 'text-sm'}`}
                         >
                           {section.title}
                         </a>
