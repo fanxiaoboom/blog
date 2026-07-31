@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 import {
+  hydrateBookProgress,
   persistBookProgress,
   progressUpdatedEvent,
   readBookProgress,
@@ -81,6 +82,7 @@ export function BookNavigation({
   useEffect(() => {
     const syncProgress = () => setProgress(readBookProgress())
     syncProgress()
+    void hydrateBookProgress().then((nextProgress) => setProgress(nextProgress))
     window.addEventListener('storage', syncProgress)
     window.addEventListener(progressUpdatedEvent, syncProgress)
     return () => {

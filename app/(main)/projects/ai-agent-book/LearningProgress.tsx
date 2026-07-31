@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import {
+  hydrateBookProgress,
   persistBookProgress,
-  progressStorageKey,
   progressUpdatedEvent,
   readBookProgress,
+  saveBookProgress,
   type StoredProgress,
 } from '~/app/(main)/projects/ai-agent-book/progress-storage'
 import { SparkleIcon } from '~/assets'
@@ -40,6 +41,7 @@ export function LearningProgress({
   useEffect(() => {
     setProgress(readBookProgress())
     setReady(true)
+    void hydrateBookProgress().then((nextProgress) => setProgress(nextProgress))
   }, [])
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function LearningProgress({
 
   useEffect(() => {
     if (!ready) return
-    window.localStorage.setItem(progressStorageKey, JSON.stringify(progress))
+    saveBookProgress(progress)
   }, [progress, ready])
 
   useEffect(() => {
