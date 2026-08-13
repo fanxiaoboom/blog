@@ -1,3 +1,5 @@
+@import '@quickdrawjs/core/quickdraw.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -54,6 +56,40 @@ html.dark {
 ::selection {
   background-color: theme('colors.lime.500');
   color: theme('colors.lime.950');
+}
+
+/* Keep the embedded canvas usable when a creator expands it on a small screen. */
+.quickdraw-shell:fullscreen {
+  display: flex;
+  min-height: 100dvh;
+  width: 100vw;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+  padding: max(1rem, env(safe-area-inset-top))
+    max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  background: theme('colors.zinc.50');
+}
+
+.dark .quickdraw-shell:fullscreen {
+  background: theme('colors.zinc.900');
+}
+
+.quickdraw-shell:fullscreen .quickdraw-stage {
+  min-height: 0;
+  height: auto;
+  flex: 1 1 0%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quickdraw-shell *,
+  .quickdraw-shell *::before,
+  .quickdraw-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 @keyframes typing-pulse {
