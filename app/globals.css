@@ -58,28 +58,31 @@ html.dark {
   color: theme('colors.lime.950');
 }
 
-/* Keep the embedded canvas usable when a creator expands it on a small screen. */
-.quickdraw-shell:fullscreen {
-  display: flex;
+/* Only the canvas enters fullscreen; safe-area padding keeps its tools reachable. */
+.quickdraw-stage:fullscreen {
+  box-sizing: border-box;
   min-height: 100dvh;
   width: 100vw;
-  flex-direction: column;
-  gap: 1rem;
+  height: 100dvh;
   overflow: hidden;
-  padding: max(1rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
-  background: theme('colors.zinc.50');
+  border: 0;
+  border-radius: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: #fbf9f4;
 }
 
-.dark .quickdraw-shell:fullscreen {
-  background: theme('colors.zinc.900');
+.quickdraw-stage[data-board-theme='dark']:fullscreen {
+  background: #191713;
 }
 
-.quickdraw-shell:fullscreen .quickdraw-stage {
-  min-height: 0;
-  height: auto;
-  flex: 1 1 0%;
+.quickdraw-fullscreen-exit {
+  top: max(0.75rem, env(safe-area-inset-top));
+  right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.quickdraw-stage:fullscreen .quickdraw-fullscreen-exit {
+  display: inline-flex;
 }
 
 @media (prefers-reduced-motion: reduce) {

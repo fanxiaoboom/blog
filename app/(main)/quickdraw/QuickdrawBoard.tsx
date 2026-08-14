@@ -42,7 +42,7 @@ function buttonClass(primary = false) {
 
 export function QuickdrawBoard() {
   const board = React.useRef<QuickdrawRef>(null)
-  const shell = React.useRef<HTMLElement>(null)
+  const stage = React.useRef<HTMLDivElement>(null)
   const store = useQuickdrawStore()
   const saveTimer = React.useRef<number>()
   const [theme, setTheme] = React.useState<BoardTheme>('light')
@@ -98,7 +98,7 @@ export function QuickdrawBoard() {
     setTheme(dark ? 'dark' : 'light')
 
     const syncFullscreen = () =>
-      setIsFullscreen(Boolean(document.fullscreenElement))
+      setIsFullscreen(document.fullscreenElement === stage.current)
     document.addEventListener('fullscreenchange', syncFullscreen)
     return () => {
       window.clearTimeout(saveTimer.current)
@@ -124,7 +124,7 @@ export function QuickdrawBoard() {
       if (document.fullscreenElement) {
         await document.exitFullscreen()
       } else {
-        await shell.current?.requestFullscreen()
+        await stage.current?.requestFullscreen()
       }
     } catch {
       setStatus('全屏模式不可用；可继续在当前窗口绘制')
@@ -162,7 +162,7 @@ export function QuickdrawBoard() {
   }
 
   return (
-    <section ref={shell} className="quickdraw-shell">
+    <section className="quickdraw-shell">
       <Link
         href="/projects"
         className="inline-flex min-h-11 items-center text-sm font-medium text-zinc-500 underline-offset-4 hover:text-lime-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-500 dark:text-zinc-400 dark:hover:text-lime-400"
@@ -237,7 +237,22 @@ export function QuickdrawBoard() {
         </label>
       </div>
 
-      <div className="quickdraw-stage mt-5 h-[min(68dvh,44rem)] min-h-[32rem] overflow-hidden rounded-2xl border border-zinc-200 bg-[#fbf9f4] shadow-xl shadow-zinc-900/5 dark:border-zinc-700 dark:bg-[#191713]">
+      <div
+        ref={stage}
+        data-board-theme={theme}
+        className="quickdraw-stage relative mt-5 h-[min(68dvh,44rem)] min-h-[32rem] overflow-hidden rounded-2xl border border-zinc-200 bg-[#fbf9f4] shadow-xl shadow-zinc-900/5 dark:border-zinc-700 dark:bg-[#191713]"
+      >
+        <button
+          type="button"
+          className={`quickdraw-fullscreen-exit absolute z-[60] hidden min-h-11 items-center justify-center rounded-xl border px-4 text-sm font-semibold shadow-lg outline-none backdrop-blur transition focus-visible:ring-2 focus-visible:ring-lime-500 focus-visible:ring-offset-2 ${
+            theme === 'dark'
+              ? 'border-white/15 bg-zinc-900/90 text-white hover:bg-zinc-800 focus-visible:ring-offset-zinc-900'
+              : 'border-zinc-900/10 bg-white/90 text-zinc-800 hover:bg-white focus-visible:ring-offset-white'
+          }`}
+          onClick={toggleFullscreen}
+        >
+          退出全屏
+        </button>
         <Quickdraw
           ref={board}
           store={store}
