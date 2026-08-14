@@ -1,3 +1,5 @@
+@import '@quickdrawjs/core/quickdraw.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -54,6 +56,43 @@ html.dark {
 ::selection {
   background-color: theme('colors.lime.500');
   color: theme('colors.lime.950');
+}
+
+/* Only the canvas enters fullscreen; safe-area padding keeps its tools reachable. */
+.quickdraw-stage:fullscreen {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: #fbf9f4;
+}
+
+.quickdraw-stage[data-board-theme='dark']:fullscreen {
+  background: #191713;
+}
+
+.quickdraw-fullscreen-exit {
+  top: max(0.75rem, env(safe-area-inset-top));
+  right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.quickdraw-stage:fullscreen .quickdraw-fullscreen-exit {
+  display: inline-flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quickdraw-shell *,
+  .quickdraw-shell *::before,
+  .quickdraw-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 @keyframes typing-pulse {

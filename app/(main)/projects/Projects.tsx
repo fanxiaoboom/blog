@@ -14,7 +14,17 @@ const aiAgentBookProject = {
   _id: 'boomoospace-ai-agent-book',
   name: '深入理解 AI Agent',
   url: '/projects/ai-agent-book',
-  description: 'AI Agent 技术书阅读计划，支持章节完成、阅读深度和本地学习进度。',
+  description:
+    'AI Agent 技术书阅读计划，支持章节完成、阅读深度和本地学习进度。',
+  icon: null,
+  internal: true,
+}
+
+const quickdrawProject = {
+  _id: 'boomoospace-quickdraw',
+  name: 'QuickDraw 画布',
+  url: '/quickdraw',
+  description: '一张自动保存到本机的无限画布，随手画、写、贴、导出。',
   icon: null,
   internal: true,
 }
@@ -23,6 +33,7 @@ export async function Projects() {
   const projects = [
     ...((await getSettings()).projects || []),
     aiAgentBookProject,
+    quickdrawProject,
     stickerForgeProject,
   ]
 

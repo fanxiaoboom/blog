@@ -26,6 +26,9 @@ importers:
       '@portabletext/react':
         specifier: ^3.0.11
         version: 3.2.4(react@18.3.1)
+      '@quickdrawjs/react':
+        specifier: 0.2.0
+        version: 0.2.0(react@18.3.1)
       '@radix-ui/react-dialog':
         specifier: ^1.0.5
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.2.65))(@types/react@18.2.65)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2370,6 +2373,14 @@ packages:
   '@portabletext/types@2.0.15':
     resolution: {integrity: sha512-2e6i2gSQsrA/5OL5Gm4/9bxB9MNO73Fa47zj+0mT93xkoQUCGCWX5fZh1YBJ86hszaRYlqvqG08oULxvvPPp/Q==}
     engines: {node: ^14.13.1 || >=16.0.0 || >=18.0.0}
+
+  '@quickdrawjs/core@0.2.0':
+    resolution: {integrity: sha512-87v/ZvyX4KYhCWqlR/js8poD6Pf1NuR4IB9RIkNxQ6g5XTUsH5vSePZkoXufVz0PRMFJv1Tmfv7RlqY9U79wMA==}
+
+  '@quickdrawjs/react@0.2.0':
+    resolution: {integrity: sha512-VS1Y2VSJRrb7PD21Ksx0/BQhpYxn09vRvVMLlDfsEk04vf0dGmUgnAVPL+zkZh1oyTNMbV2sXgXm66KNQ5KaNA==}
+    peerDependencies:
+      react: '>=17'
 
   '@radix-ui/number@1.0.1':
     resolution: {integrity: sha512-T5gIdVO2mmPW3NNhjNgEP3cqMXjXL9UbO0BzWcXfvdBs+BohbQxvd/K5hSVKmn9/lbTdsQVKbUcP5WLCwvUbBg==}
@@ -12120,6 +12131,13 @@ snapshots:
       '@portabletext/types': 2.0.15
 
   '@portabletext/types@2.0.15': {}
+
+  '@quickdrawjs/core@0.2.0': {}
+
+  '@quickdrawjs/react@0.2.0(react@18.3.1)':
+    dependencies:
+      '@quickdrawjs/core': 0.2.0
+      react: 18.3.1
 
   '@radix-ui/number@1.0.1':
     dependencies:
