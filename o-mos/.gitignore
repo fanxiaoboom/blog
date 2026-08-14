@@ -1,0 +1,7 @@
+.venv/
+.open-webui-venv/
+.webui_secret_key
+data/
+.env
+__pycache__/
+*.py[cod]
