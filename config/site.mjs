@@ -1,3 +1,8 @@
+const configuredProductionUrl = process.env.NEXT_PUBLIC_SITE_URL
+const productionUrl = configuredProductionUrl?.match(/^https?:\/\//)
+  ? configuredProductionUrl
+  : 'https://boomoo.space'
+
 export const siteConfig = {
   name: 'BooMoo Space',
   owner: 'Bran',
@@ -6,7 +11,7 @@ export const siteConfig = {
     '我是 Bran，一名关注产品、体验设计和技术实践的创作者。在 BooMoo Space 记录项目、学习、生活与思考。',
   url:
     process.env.NODE_ENV === 'production'
-      ? (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://boomoo.space')
+      ? productionUrl
       : 'http://localhost:3000',
   locale: 'zh_CN',
   language: 'zh-CN',

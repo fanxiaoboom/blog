@@ -1,0 +1,6 @@
+_web/
+site/
+.cache/
+.vercel/
+.vercel
+.env*

@@ -52,3 +52,10 @@ export const guestbook = pgTable('guestbook', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
+
+export const learningProgress = pgTable('learning_progress', {
+  userId: varchar('user_id', { length: 200 }).primaryKey(),
+  progress: json('progress').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})

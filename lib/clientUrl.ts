@@ -6,9 +6,12 @@
  * misconfigured.
  */
 export function clientUrl(path = '') {
+  const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
   const baseUrl =
     typeof window === 'undefined'
-      ? (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000')
+      ? configuredSiteUrl?.match(/^https?:\/\//)
+        ? configuredSiteUrl
+        : 'http://localhost:3000'
       : window.location.origin
 
   return new URL(path, baseUrl).href
