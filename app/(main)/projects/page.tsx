@@ -2,11 +2,9 @@ import { type Metadata } from 'next'
 
 import { Projects } from '~/app/(main)/projects/Projects'
 import { Container } from '~/components/ui/Container'
-import { getSettings } from '~/sanity/queries'
 
 const title = '我的项目'
-const description =
-  '看看这么些时日来，我都捣鼓过什么东西吧'
+const description = '看看这么些时日来，我都捣鼓过什么东西吧'
 export const metadata = {
   title,
   description,
@@ -21,12 +19,7 @@ export const metadata = {
   },
 } satisfies Metadata
 
-export default async function ProjectsPage() {
-  const { projects } = await getSettings()
-  if (!projects?.length) {
-    return null
-  }
-
+export default function ProjectsPage() {
   return (
     <Container className="mt-16 sm:mt-32">
       <header className="max-w-2xl">
