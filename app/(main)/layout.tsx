@@ -6,8 +6,8 @@ import { Suspense } from 'react'
 import { Footer } from '~/app/(main)/Footer'
 import { Header } from '~/app/(main)/Header'
 import { QueryProvider } from '~/app/QueryProvider'
-import { OmosChatWindow } from '~/o-mos/web/OmosChatWindow'
 import { PageAgentWindow } from '~/components/PageAgentWindow'
+import { OmosChatWindow } from '~/o-mos/web/OmosChatWindow'
 
 export default function BlogLayout({
   children,
