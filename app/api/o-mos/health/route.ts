@@ -15,7 +15,7 @@ export async function GET() {
     })
   } catch {
     return Response.json(
-      { detail: '无法连接 o-mos API。请确认本地服务正在运行。' },
+      { detail: '无法连接 O-mos API。请确认本地服务正在运行。' },
       { status: 503 },
     )
   }

@@ -7,6 +7,7 @@ module.exports = {
   content: [
     './app/**/*.tsx',
     './components/**/*.tsx',
+    './o-mos/web/**/*.tsx',
     './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', // Tremor module
   ],
   theme: {

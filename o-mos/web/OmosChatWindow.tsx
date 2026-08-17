@@ -17,7 +17,7 @@ const PANEL_GUTTER = 16
 const welcomeMessage: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  content: '我是 o-mos，运行在 Bran 的本地 Mac 上。想聊聊 LLM、RAG 或 AI 产品吗？',
+  content: '我是 O-mos，运行在 Bran 的本地 Mac 上。想聊聊 LLM、RAG 或 AI 产品吗？',
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -131,7 +131,7 @@ export function OmosChatWindow() {
 
       if (!response.ok || !response.body) {
         const error = (await response.json().catch(() => null)) as { detail?: string } | null
-        throw new Error(error?.detail || 'o-mos 暂时无法回答。')
+        throw new Error(error?.detail || 'O-mos 暂时无法回答。')
       }
 
       const reader = response.body.getReader()
@@ -166,7 +166,7 @@ export function OmosChatWindow() {
 
       setStatus('ready')
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'o-mos 暂时无法回答。'
+      const message = error instanceof Error ? error.message : 'O-mos 暂时无法回答。'
       setMessages((current) =>
         current.map((item) =>
           item.id === assistantMessage.id ? { ...item, content: message } : item,
@@ -187,7 +187,7 @@ export function OmosChatWindow() {
     <>
       <button
         aria-expanded={isOpen}
-        aria-label="打开 o-mos 本地模型"
+        aria-label="打开 O-mos 本地模型"
         className={`fixed bottom-24 right-5 z-[60] grid h-12 w-12 place-items-center rounded-full bg-zinc-900 text-white shadow-lg shadow-zinc-900/25 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:ring-offset-2 motion-reduce:transition-none dark:bg-lime-400 dark:text-zinc-950 dark:hover:bg-lime-300 sm:bottom-24 sm:right-6 ${
           isOpen ? 'pointer-events-none scale-75 opacity-0' : 'scale-100 opacity-100'
         }`}
@@ -199,7 +199,7 @@ export function OmosChatWindow() {
 
       <section
         aria-hidden={!isOpen}
-        aria-label="o-mos 本地模型对话"
+        aria-label="O-mos 本地模型对话"
         className={`fixed bottom-24 right-5 z-[60] flex h-[min(32rem,calc(100vh-8rem))] w-[calc(100vw-2rem)] max-w-[23rem] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-50/95 shadow-2xl shadow-zinc-900/15 backdrop-blur transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none dark:border-zinc-700/80 dark:bg-zinc-900/95 dark:shadow-black/30 sm:bottom-24 sm:right-6 sm:w-[23rem] ${
           isOpen
             ? 'translate-y-0 scale-100 opacity-100'
@@ -212,7 +212,7 @@ export function OmosChatWindow() {
         }
       >
         <div
-          aria-label="拖动 o-mos 窗口"
+          aria-label="拖动 O-mos 窗口"
           className="flex touch-none cursor-grab items-center justify-between border-b border-zinc-200/80 px-4 py-3 dark:border-zinc-700/80 active:cursor-grabbing"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -223,7 +223,7 @@ export function OmosChatWindow() {
               <AtomIcon className="h-4 w-4" />
             </span>
             <div>
-              <p className="text-sm font-semibold leading-5 text-zinc-900 dark:text-zinc-100">o-mos</p>
+              <p className="text-sm font-semibold leading-5 text-zinc-900 dark:text-zinc-100">O-mos</p>
               <p className="text-xs leading-4 text-zinc-500 dark:text-zinc-400">{statusText}</p>
             </div>
           </div>
@@ -238,7 +238,7 @@ export function OmosChatWindow() {
               新对话
             </button>
             <button
-              aria-label="收起 o-mos 窗口"
+              aria-label="收起 O-mos 窗口"
               className="grid h-7 w-7 cursor-pointer place-items-center rounded-md text-zinc-400 transition hover:bg-zinc-200 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-lime-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
               onClick={() => setIsOpen(false)}
               onPointerDown={(event) => event.stopPropagation()}
@@ -265,7 +265,7 @@ export function OmosChatWindow() {
         </div>
 
         <form className="border-t border-zinc-200/80 px-4 pb-4 pt-3 dark:border-zinc-700/80" onSubmit={handleSubmit}>
-          <label className="sr-only" htmlFor="o-mos-chat-input">给 o-mos 的问题</label>
+          <label className="sr-only" htmlFor="o-mos-chat-input">给 O-mos 的问题</label>
           <div className="flex gap-2">
             <input
               className="min-w-0 flex-1 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-lime-400 focus:ring-2 focus:ring-lime-300/50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500"

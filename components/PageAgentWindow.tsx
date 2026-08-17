@@ -42,7 +42,7 @@ export function PageAgentWindow() {
     'loading',
   )
   const [response, setResponse] = useState(
-    '我是 O-mos，可以帮你浏览页面、打开文章或切换页面。',
+    '我是 O-moswright，可以帮你浏览页面、打开文章或切换页面。',
   )
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export function PageAgentWindow() {
       } catch {
         if (disposed) return
         setStatus('error')
-        setResponse('Page Agent 初始化失败，请刷新后重试。')
+        setResponse('O-moswright 初始化失败，请刷新后重试。')
       }
     }
 
@@ -131,7 +131,7 @@ export function PageAgentWindow() {
 
     if (!agentRef.current) {
       setStatus('error')
-      setResponse('Agent 尚未就绪，请稍候再试。')
+      setResponse('O-moswright 尚未就绪，请稍候再试。')
       return
     }
 
@@ -156,7 +156,7 @@ export function PageAgentWindow() {
     <>
       <button
         aria-expanded={isOpen}
-        aria-label="打开 O-mos"
+        aria-label="打开 O-moswright"
         className={`fixed bottom-5 right-5 z-[70] grid h-12 w-12 place-items-center rounded-full bg-zinc-900 text-white shadow-lg shadow-zinc-900/25 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:ring-offset-2 motion-reduce:transition-none dark:bg-lime-400 dark:text-zinc-950 dark:hover:bg-lime-300 sm:bottom-6 sm:right-6 ${
           isOpen
             ? 'pointer-events-none scale-75 opacity-0'
@@ -170,7 +170,7 @@ export function PageAgentWindow() {
       </button>
 
       <section
-        aria-label="O-mos"
+        aria-label="O-moswright"
         aria-hidden={!isOpen}
         className={`fixed bottom-5 right-5 z-[70] w-[calc(100vw-2rem)] max-w-[23rem] origin-bottom-right overflow-hidden rounded-2xl border border-zinc-200/90 bg-zinc-50/95 shadow-2xl shadow-zinc-900/15 backdrop-blur transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none dark:border-zinc-700/80 dark:bg-zinc-900/95 dark:shadow-black/30 sm:bottom-6 sm:right-6 sm:w-[23rem] ${
           isOpen
@@ -185,7 +185,7 @@ export function PageAgentWindow() {
         }
       >
         <div
-          aria-label="拖动 Agent 窗口"
+          aria-label="拖动 O-moswright 窗口"
           className="flex touch-none cursor-grab items-center justify-between border-b border-zinc-200/80 px-4 py-3 dark:border-zinc-700/80 active:cursor-grabbing"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -197,7 +197,7 @@ export function PageAgentWindow() {
             </span>
             <div>
               <p className="text-sm font-semibold leading-5 text-zinc-900 dark:text-zinc-100">
-                O-mos
+                O-moswright
               </p>
               <p className="text-xs leading-4 text-zinc-500 dark:text-zinc-400">
                 {status === 'loading' && '正在连接…'}
@@ -208,7 +208,7 @@ export function PageAgentWindow() {
             </div>
           </div>
           <button
-            aria-label="收起 O-mos 窗口"
+            aria-label="收起 O-moswright 窗口"
             className="grid h-7 w-7 cursor-pointer place-items-center rounded-md text-zinc-400 transition hover:bg-zinc-200 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-lime-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
             onClick={() => setIsOpen(false)}
             onPointerDown={(event) => event.stopPropagation()}
@@ -224,7 +224,7 @@ export function PageAgentWindow() {
           </p>
           <form className="mt-3 flex gap-2" onSubmit={handleSubmit}>
             <label className="sr-only" htmlFor="page-agent-command">
-              给 Agent 的指令
+              给 O-moswright 的指令
             </label>
             <input
               className="min-w-0 flex-1 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none placeholder:text-zinc-400 focus:border-lime-400 focus:ring-2 focus:ring-lime-300/50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500"
@@ -243,7 +243,7 @@ export function PageAgentWindow() {
             </button>
           </form>
           <p className="mt-2 text-[11px] leading-4 text-zinc-400 dark:text-zinc-500">
-            可拖动标题栏定位 · 由 O-mos 演示模型驱动
+            可拖动标题栏定位 · 页面导航能力由 O-moswright 驱动
           </p>
         </div>
       </section>
