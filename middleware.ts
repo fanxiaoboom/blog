@@ -1,4 +1,7 @@
 import { authMiddleware } from '@clerk/nextjs'
+
+type AuthMiddlewareParams = NonNullable<Parameters<typeof authMiddleware>[0]>
+type BeforeAuthHandler = NonNullable<AuthMiddlewareParams['beforeAuth']>
 import { get } from '@vercel/edge-config'
 import { type NextFetchEvent, type NextRequest, NextResponse } from 'next/server'
 
@@ -12,7 +15,33 @@ export const config = {
   matcher: ['/((?!_next|.*\\..*).*)'],
 }
 
-async function beforeAuthMiddleware(req: NextRequest, evt: NextFetchEvent) {
+const publicRoutes = [
+  '/',
+  '/api(.*)',
+  '/blog(.*)',
+  '/confirm(.*)',
+  '/projects',
+  '/guestbook',
+  '/newsletters(.*)',
+  '/about',
+  '/rss',
+  '/feed',
+  '/ama',
+]
+
+function isPublicRoute(pathname: string) {
+  return publicRoutes.some((pattern) => {
+    // Clerk-style path-to-regexp: e.g. /blog(.*) matches /blog and /blog/foo
+    const regex = new RegExp(
+      `^${pattern
+        .replace(/\\\./g, '\\.')
+        .replace(/\(\.\*\)/g, '.*')}$`
+    )
+    return regex.test(pathname)
+  })
+}
+
+const beforeAuthMiddleware = (async (req, evt) => {
   const { geo, nextUrl } = req
   const isApi = nextUrl.pathname.startsWith('/api/')
 
@@ -54,8 +83,16 @@ async function beforeAuthMiddleware(req: NextRequest, evt: NextFetchEvent) {
     }
   }
 
+  // Skip Clerk authentication for public routes. Clerk's authMiddleware runs
+  // authenticateRequest *before* checking publicRoutes, so a stale/invalid
+  // __session cookie (or misconfigured Clerk instance) causes 401s even on
+  // public pages. Returning false here tells authMiddleware to skip auth.
+  if (isPublicRoute(nextUrl.pathname)) {
+    return false
+  }
+
   return NextResponse.next()
-}
+}) as BeforeAuthHandler
 
 const hasClerkSecret = Boolean(
   process.env.CLERK_SECRET_KEY || process.env.CLERK_API_KEY
@@ -64,18 +101,6 @@ const hasClerkSecret = Boolean(
 export default hasClerkSecret
   ? authMiddleware({
       beforeAuth: beforeAuthMiddleware,
-      publicRoutes: [
-        '/',
-        '/api(.*)',
-        '/blog(.*)',
-        '/confirm(.*)',
-        '/projects',
-        '/guestbook',
-        '/newsletters(.*)',
-        '/about',
-        '/rss',
-        '/feed',
-        '/ama',
-      ],
+      publicRoutes,
     })
   : beforeAuthMiddleware
