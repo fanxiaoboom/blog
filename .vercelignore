@@ -1,0 +1,16 @@
+# Local build artifacts and dependencies are rebuilt by Vercel.
+node_modules/
+.next/
+.vercel/
+
+# The local O-mos runtime is served separately and must not be bundled into
+# the Next.js deployment.
+o-mos/.open-webui-venv/
+o-mos/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Local research/output materials are not part of the web application.
+outputs/
+venturemos/
+interview-strategy/

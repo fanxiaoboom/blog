@@ -7,6 +7,7 @@ import { Footer } from '~/app/(main)/Footer'
 import { Header } from '~/app/(main)/Header'
 import { QueryProvider } from '~/app/QueryProvider'
 import { PageAgentWindow } from '~/components/PageAgentWindow'
+import { OmosChatWindow } from '~/o-mos/web/OmosChatWindow'
 
 export default function BlogLayout({
   children,
@@ -32,6 +33,7 @@ export default function BlogLayout({
             <Footer />
           </Suspense>
           <PageAgentWindow />
+          <OmosChatWindow />
         </div>
       </QueryProvider>
 
