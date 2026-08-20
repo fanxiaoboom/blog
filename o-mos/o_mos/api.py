@@ -2,13 +2,14 @@
 
 import json
 import os
+import secrets
 import threading
 import urllib.error
 import urllib.request
 from collections.abc import Iterator
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import Depends, FastAPI, Header, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
@@ -73,6 +74,21 @@ app.add_middleware(
 )
 
 
+def require_api_key(authorization: str | None = Header(default=None)) -> None:
+    """Reject all API requests that do not carry the configured Bearer key."""
+    expected_key = os.getenv("OMOS_API_KEY")
+    if not expected_key:
+        raise HTTPException(status_code=503, detail="O-mos API authentication is not configured.")
+
+    scheme, _, supplied_key = (authorization or "").partition(" ")
+    if (
+        scheme.lower() != "bearer"
+        or not supplied_key
+        or not secrets.compare_digest(supplied_key, expected_key)
+    ):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
 def get_session(session_id: str | None) -> tuple[str, list[BaseMessage]]:
     """Return an existing memory buffer or create a fresh browser conversation."""
     resolved_id = session_id or uuid4().hex
@@ -104,7 +120,7 @@ def sse(event: str, payload: dict[str, str]) -> str:
     return f"event: {event}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health", response_model=HealthResponse, dependencies=[Depends(require_api_key)])
 def health() -> HealthResponse:
     """Check that the API process and its configured Ollama service are reachable."""
     try:
@@ -115,7 +131,7 @@ def health() -> HealthResponse:
     return HealthResponse(status="ok", model=MODEL_NAME, ollama="reachable")
 
 
-@app.post("/api/chat", response_model=ChatResponse)
+@app.post("/api/chat", response_model=ChatResponse, dependencies=[Depends(require_api_key)])
 def chat(request: ChatRequest) -> ChatResponse:
     """Return a complete o-mos answer; useful for simple HTTP clients."""
     session_id, messages = get_session(request.session_id)
@@ -129,7 +145,7 @@ def chat(request: ChatRequest) -> ChatResponse:
     return ChatResponse(session_id=session_id, answer=answer)
 
 
-@app.post("/api/chat/stream")
+@app.post("/api/chat/stream", dependencies=[Depends(require_api_key)])
 def stream_chat(request: ChatRequest) -> StreamingResponse:
     """Stream answer tokens as SSE for a responsive browser chat experience."""
     session_id, messages = get_session(request.session_id)
@@ -161,7 +177,11 @@ def stream_chat(request: ChatRequest) -> StreamingResponse:
     )
 
 
-@app.post("/api/sessions/{session_id}/reset", response_model=SessionResponse)
+@app.post(
+    "/api/sessions/{session_id}/reset",
+    response_model=SessionResponse,
+    dependencies=[Depends(require_api_key)],
+)
 def reset_session(session_id: str) -> SessionResponse:
     """Clear the API's short-term conversation memory for one browser session."""
     with sessions_lock:
@@ -169,7 +189,11 @@ def reset_session(session_id: str) -> SessionResponse:
     return SessionResponse(session_id=session_id, message="已清空本次会话记忆。")
 
 
-@app.get("/api/sessions/{session_id}", response_model=SessionResponse)
+@app.get(
+    "/api/sessions/{session_id}",
+    response_model=SessionResponse,
+    dependencies=[Depends(require_api_key)],
+)
 def session_status(session_id: str) -> SessionResponse:
     """Expose a small session probe for local integration debugging."""
     with sessions_lock:

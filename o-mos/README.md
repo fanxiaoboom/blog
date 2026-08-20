@@ -38,7 +38,7 @@ uv run o-mos
 ```bash
 cd /Users/bran/Documents/my-projects/boomoospace/o-mos
 uv sync
-uv run o-mos-api
+uv run --env-file .env o-mos-api
 ```
 
 API 默认只监听本机 `http://127.0.0.1:8000`，因此不会意外暴露到公网。打开 <http://127.0.0.1:8000/docs> 可以直接学习和测试接口。

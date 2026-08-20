@@ -1,13 +1,14 @@
-import { getOmosApiUrl, omosApiUnavailable } from '~/o-mos/web/next-api'
+import { getOmosApiHeaders, getOmosApiUrl, omosApiUnavailable } from '~/o-mos/web/next-api'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const apiUrl = getOmosApiUrl()
-  if (!apiUrl) return omosApiUnavailable()
+  const apiHeaders = getOmosApiHeaders()
+  if (!apiUrl || !apiHeaders) return omosApiUnavailable()
 
   try {
-    const response = await fetch(`${apiUrl}/health`, { cache: 'no-store' })
+    const response = await fetch(`${apiUrl}/health`, { cache: 'no-store', headers: apiHeaders })
     const body = await response.text()
     return new Response(body, {
       status: response.status,

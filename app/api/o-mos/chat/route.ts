@@ -1,17 +1,18 @@
-import { getOmosApiUrl, omosApiUnavailable } from '~/o-mos/web/next-api'
+import { getOmosApiHeaders, getOmosApiUrl, omosApiUnavailable } from '~/o-mos/web/next-api'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 export async function POST(request: Request) {
   const apiUrl = getOmosApiUrl()
-  if (!apiUrl) return omosApiUnavailable()
+  const apiHeaders = getOmosApiHeaders()
+  if (!apiUrl || !apiHeaders) return omosApiUnavailable()
 
   try {
     const payload = await request.json()
     const response = await fetch(`${apiUrl}/api/chat/stream`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...apiHeaders },
       body: JSON.stringify(payload),
       cache: 'no-store',
     })
